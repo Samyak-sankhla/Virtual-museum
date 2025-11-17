@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Artist Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-2">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>My Artifacts</h3>
+    <a class="btn btn-primary" href="{{ url_for('main.upload_artifact') }}">Upload New Artifact</a>
+  </div>
+
+  <!-- Search / Filter -->
+  <div class="card p-3 mb-3">
+    <form method="GET" action="{{ url_for('main.dashboard') }}" class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <input type="text" name="search" class="form-control" placeholder="Search by name" value="{{ request.args.get('search','') }}">
+      </div>
+      <div class="col-md-3">
+        <select name="filter_type" class="form-select">
+          <option value="">All Categories</option>
+          {% for t in types %}
+            <option value="{{ t }}" {% if request.args.get('filter_type') == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-primary w-100">Filter</button>
+      </div>
+    </form>
+  </div>
+
+  {% if artifacts %}
+  <div class="hscroll">
+    {% for a in artifacts %}
+    <div class="item-card card p-2">
+      <img src="{{ url_for('static', filename=a.Image or 'placeholder.png') }}" alt="{{ a.Title }}">
+      <div class="card-body text-center">
+        <h5 class="card-title">{{ a.Title }}</h5>
+        <p class="text-muted mb-1">{{ a.Type }}</p>
+        <p class="mb-1"><strong>₹{{ '%.2f'|format(a.Price) }}</strong> • Stock: {{ a.Quantity }}</p>
+        <form method="POST" action="{{ url_for('main.delete_artifact', artifact_id=a.Artifact_ID) }}"
+              onsubmit="return confirm('Delete this artifact? This cannot be undone.');">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="text-muted">No artifacts yet. Click <strong>Upload New Artifact</strong> to add your first.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Complex Queries{% endblock %}
+{% block content %}
+<div class="card p-3">
+  <h5>Complex Queries</h5>
+  <div class="d-grid gap-2">
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='top_customers') }}">Top Customers by Spend</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='best_selling') }}">Best Selling Artifacts</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='above_avg_spend') }}">Customers Above Average Spend</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='artist_revenue') }}">Revenue by Artist</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='low_stock') }}">Low Stock Alerts</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='upcoming_ex') }}">Upcoming Exhibitions</a>
+    <a class="btn btn-outline-info" href="{{ url_for('main.admin_run_complex_query', name='type_max_price') }}">Most Expensive Artifact per Type</a>
+  </div>
+  <a class="btn btn-secondary mt-3" href="{{ url_for('main.dashboard') }}">Back</a>
+</div>
+{% endblock %}

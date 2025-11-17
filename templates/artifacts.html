@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-3 mb-3">
+  <form method="get" class="row g-2">
+    <div class="col-md-3"><input class="form-control" type="text" name="q" value="{{ request.args.get('q','') }}" placeholder="Search by name"></div>
+    <div class="col-md-2">
+      <select class="form-select" name="type">
+        <option value="">All Types</option>
+        {% for t in types %}<option value="{{t}}" {% if request.args.get('type')==t %}selected{% endif %}>{{t}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><input class="form-control" name="price_min" type="number" step="0.01" value="{{request.args.get('price_min','')}}" placeholder="Min Price"></div>
+    <div class="col-md-2"><input class="form-control" name="price_max" type="number" step="0.01" value="{{request.args.get('price_max','')}}" placeholder="Max Price"></div>
+    <div class="col-md-1">
+      <select class="form-select" name="m_id">
+        <option value="">Museum</option>
+        {% for m in museums %}<option value="{{m.M_ID}}" {% if request.args.get('m_id')==m.M_ID|string %}selected{% endif %}>{{m.Name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="artist_id">
+        <option value="">Artist</option>
+        {% for a in artists %}<option value="{{a.User_ID}}" {% if request.args.get('artist_id')==a.User_ID|string %}selected{% endif %}>{{a.Name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-12"><button class="btn btn-primary">Apply</button> <a class="btn btn-outline-secondary" href="/artifacts">Reset</a></div>
+  </form>
+</div>
+
+<div class="card p-3 hscroll">
+  {% for a in rows %}
+  <div class="item-card card p-2">
+    {% set img = a.Image_URL and ('/static/' ~ a.Image_URL) or '/static/placeholder.png' %}
+    <img src="{{ img }}" alt="Artifact">
+    <div class="mt-2">
+      <div class="fw-semibold">{{a.Title}}</div>
+      <div class="muted small">{{a.Type}} • ₹ {{a.Price}}</div>
+      <div class="small">Qty: {{a.Quantity}}</div>
+      <div class="small">By {{a.Artist_Name}}</div>
+      <div class="small muted">{{a.Museum_Name}}</div>
+    </div>
+  </div>
+  {% endfor %}
+  {% if not rows %}<div class="text-secondary">No artifacts match your filters.</div>{% endif %}
+</div>
+{% endblock %}

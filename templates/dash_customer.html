@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Virtual Museum – Customer Dashboard{% endblock %}
+{% block content %}
+
+<div class="container mt-2">
+  <!-- Search and Filter -->
+  <div class="card p-3 shadow-sm mb-4">
+    <form method="GET" action="{{ url_for('main.dashboard') }}" class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <input type="text" name="search" class="form-control" placeholder="Search by Artifact name..." value="{{ request.args.get('search', '') }}">
+      </div>
+      <div class="col-md-3">
+        <select name="filter_type" class="form-select">
+          <option value="">All Categories</option>
+          {% for t in types %}
+            <option value="{{ t }}" {% if request.args.get('filter_type') == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Artifact Gallery (Horizontal) -->
+  <h4 class="mb-3">🖼️ Explore Artifacts</h4>
+  {% if artifacts %}
+  <div class="hscroll pb-2">
+    {% for a in artifacts %}
+    <div class="item-card card p-2">
+      <img src="{{ url_for('static', filename=a.Image or 'placeholder.png') }}" alt="{{ a.Title }}">
+      <div class="card-body text-center">
+        <h5 class="card-title">{{ a.Title }}</h5>
+        <p class="text-muted mb-1">{{ a.Type }}</p>
+        <p class="mb-1"><strong>₹{{ '%.2f'|format(a.Price) }}</strong></p>
+        <p class="small">{{ a.Description|default('', true)|truncate(100, True, '…') }}</p>
+        <form method="POST" action="{{ url_for('main.cart_add', artifact_id=a.Artifact_ID) }}">
+          <div class="input-group input-group-sm mb-2">
+            <input type="number" name="qty" value="1" min="1" class="form-control" max="{{ a.Quantity }}" >
+            <button class="btn btn-outline-primary" type="submit">Add to Cart</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="text-center text-muted">No artifacts found. Try adjusting filters.</p>
+  {% endif %}
+
+  <hr class="my-4">
+
+  <!-- Upcoming Exhibitions -->
+  <h4 class="mb-3">🗓️ Upcoming Exhibitions</h4>
+  {% if exhibitions %}
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Theme</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Capacity</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ex in exhibitions %}
+        <tr>
+          <td>{{ ex.Title }}</td>
+          <td>{{ ex.Theme }}</td>
+          <td>{{ ex.Start_Date }}</td>
+          <td>{{ ex.End_Date }}</td>
+          <td>{{ ex.Capacity }}</td>
+          <td>{{ ex.Museum_Name or 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-center text-muted">No upcoming exhibitions available.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

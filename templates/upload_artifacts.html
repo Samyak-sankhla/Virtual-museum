@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Upload New Artifact{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center mb-4">🖼️ Upload a New Artifact</h2>
+  <form method="POST"
+      action="{{ url_for('main.upload_artifact') }}"
+      enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input type="text" name="title" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Type</label>
+      <select name="type" class="form-select">
+        <option>Painting</option>
+        <option>Sculpture</option>
+        <option>Digital</option>
+        <option>Photography</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" name="price" step="0.01" class="form-control" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Quantity</label>
+        <input type="number" name="quantity" min="1" class="form-control" required>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Museum <span class="text-danger">*</span></label>
+      <select name="museum" class="form-select" required>
+        <option value="" disabled selected>— Select a Museum —</option>
+        {% for m in museums %}
+        <option value="{{ m.M_ID }}">{{ m.Name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Artifact Image</label>
+      <input type="file" name="image" accept="image/*" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-success w-100">Upload Artifact</button>
+  </form>
+</div>
+{% endblock %}

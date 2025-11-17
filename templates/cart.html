@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Your Cart{% endblock %}
+{% block content %}
+<div class="container mt-2">
+  <h3 class="mb-3">🛒 Your Cart</h3>
+
+  {% if items %}
+  <!-- Single form; default action updates the cart -->
+  <form id="cart-form" method="POST" action="{{ url_for('main.cart_update') }}">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th style="width:140px;">Qty</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in items %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img src="{{ url_for('static', filename=it.Image or 'placeholder.png') }}"
+                     alt=""
+                     style="width:64px;height:64px;object-fit:cover;border-radius:8px;">
+                <div class="fw-semibold">{{ it.Title }}</div>
+              </div>
+            </td>
+            <td>₹{{ '%.2f'|format(it.Price|float) }}</td>
+            <td>
+              <input
+                class="form-control form-control-sm qty-input"
+                type="number"
+                name="qty_{{ it.Artifact_ID }}"
+                value="{{ it.Qty }}"
+                min="0"
+                data-prev="{{ it.Qty }}"
+                aria-label="Quantity for {{ it.Title }}">
+            </td>
+            <td>₹{{ '%.2f'|format(it.Subtotal|float) }}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="3" class="text-end"><strong>Total</strong></td>
+            <td><strong>₹{{ '%.2f'|format(total|float) }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <a class="btn btn-outline-secondary" href="{{ url_for('main.dashboard') }}">← Continue Shopping</a>
+
+      <div class="d-flex gap-2">
+        <!-- Updates the cart (default action of this form) -->
+        <button id="btn-update" class="btn btn-outline-primary" type="submit">
+          Update Cart
+        </button>
+
+        <!-- CHECKOUT: same form fields, but submit to checkout endpoint -->
+        <!-- No nested form; use formaction to override -->
+        <button id="btn-checkout"
+                class="btn btn-success"
+                type="submit"
+                formaction="{{ url_for('main.cart_checkout') }}"
+                formmethod="post"
+                title="Click Update Cart if you changed quantities.">
+          Checkout
+        </button>
+      </div>
+    </div>
+  </form>
+
+  {% else %}
+    <div class="alert alert-info">Your cart is empty.</div>
+    <a class="btn btn-primary" href="{{ url_for('main.dashboard') }}">Browse Artifacts</a>
+  {% endif %}
+</div>
+
+{% if items %}
+<script>
+(function(){
+  const form = document.getElementById('cart-form');
+  const checkoutBtn = document.getElementById('btn-checkout');
+  const updateBtn = document.getElementById('btn-update');
+  const qtyInputs = document.querySelectorAll('.qty-input');
+
+  function hasUnsavedChanges(){
+    for (const inp of qtyInputs) {
+      const prev = parseInt(inp.getAttribute('data-prev'), 10);
+      const now  = parseInt(inp.value, 10);
+      if ((isNaN(prev) ? 0 : prev) !== (isNaN(now) ? 0 : now)) return true;
+    }
+    return false;
+  }
+
+  function refreshCheckoutState(){
+    // Disable checkout if quantities changed but not yet updated
+    if (hasUnsavedChanges()) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.title = "You changed quantities. Click 'Update Cart' first to save changes.";
+    } else {
+      checkoutBtn.disabled = false;
+      checkoutBtn.title = "Checkout";
+    }
+  }
+
+  qtyInputs.forEach(inp => {
+    inp.addEventListener('input', refreshCheckoutState);
+  });
+  refreshCheckoutState();
+
+  // After successful update (server redirects back), inputs will render with new data-prev via template.
+  // If someone force-clicks checkout while disabled, prevent it and encourage update.
+  form.addEventListener('submit', function(e){
+    const submitter = e.submitter; // the button clicked
+    if (submitter && submitter.id === 'btn-checkout' && hasUnsavedChanges()) {
+      e.preventDefault();
+      alert("Please click 'Update Cart' to save your quantity changes before checking out.");
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-2">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>All Artifacts</h3>
+    <a class="btn btn-outline-light" href="{{ url_for('main.admin_transactions') }}">View Transactions</a>
+    <a class="btn btn-outline-light" href="{{ url_for('main.admin_queries_home') }}">Complex Queries</a>
+  </div>
+  {% if artifacts %}
+  <div class="hscroll">
+    {% for a in artifacts %}
+    <div class="item-card card p-2">
+      <img src="{{ url_for('static', filename=a.Image or 'placeholder.png') }}" alt="{{ a.Title }}">
+      <div class="card-body text-center">
+        <h5 class="card-title">{{ a.Title }}</h5>
+        <p class="text-muted mb-1">{{ a.Type }} • {{ a.Museum_Name }}</p>
+        <p class="mb-1">Artist: {{ a.Artist_Name }}</p>
+        <p class="mb-1"><strong>₹{{ '%.2f'|format(a.Price) }}</strong> • Stock: {{ a.Quantity }}</p>
+        <form method="POST" action="{{ url_for('main.admin_delete_artifact', artifact_id=a.Artifact_ID) }}"
+              onsubmit="return confirm('Admin: Delete this artifact?');">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="text-muted">No artifacts found.</p>
+  {% endif %}
+</div>
+{% endblock %}

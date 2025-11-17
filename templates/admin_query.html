@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-3">
+  <h5>{{qname}}</h5>
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+        {% if rows and rows[0] %}{% for k in rows[0].keys() %}<th>{{k}}</th>{% endfor %}{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}<tr>{% for v in row.values() %}<td>{{v}}</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a class="btn btn-secondary" href="/dashboard">Back</a>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center">
+    <h5>Transactions</h5>
+    <a class="btn btn-secondary" href="/dashboard">Back</a>
+  </div>
+  <div class="table-responsive mt-3">
+    <table class="table table-sm">
+      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Artifact</th><th>Qty</th><th>Total</th><th>Artist</th><th>Museum</th></tr></thead>
+      <tbody>
+        {% for r in transactions %}
+        <tr>
+          <td>{{r.Transaction_ID}}</td><td>{{r.Purchase_Date}}</td><td>{{r.Customer_Name}}</td>
+          <td>{{r.Artifact_Title}}</td><td>{{r.Quantity}}</td><td>₹ {{r.Total_Amount}}</td>
+          <td>{{r.Artist_Name or '-'}}</td><td>{{r.Museum_Name or '-'}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
